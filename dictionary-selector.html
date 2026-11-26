@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Spanish Smart Dictionary</title>
+</head>
+<body>
+<script>
+(() => {
+    // Get the selected word or phrase from the URL.
+    const params = new URLSearchParams(window.location.search);
+    const text = (params.get("q") || "").trim();
+
+    if (!text) {
+        document.body.textContent =
+            "Spanish Smart Dictionary: No word or phrase supplied.";
+        return;
+    }
+
+    // Count words, treating hyphenated words as one.
+    const words = text.match(
+        /[\p{L}\p{M}]+(?:['’\-][\p{L}\p{M}]+)*/gu
+    ) || [];
+
+    let destination;
+
+    if (words.length <= 1) {
+        // Single word: Spanish-Spanish dictionary.
+        destination =
+            "https://www.wordreference.com/definicion/" +
+            encodeURIComponent(text);
+    } else {
+        // Multiple words: Spanish to English translation.
+        const googleParams = new URLSearchParams({
+            sl: "es",
+            tl: "en",
+            text: text,
+            op: "translate"
+        });
+
+        destination =
+            "https://translate.google.com/?" +
+            googleParams.toString();
+    }
+
+    // Redirect to the appropriate dictionary.
+    window.location.replace(destination);
+})();
+</script>
+</body>
+</html>
+
